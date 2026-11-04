@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Craft Jerky Tycoon</title>
+<style>
+:root{--bg:#100f0e;--card:#1c1a18;--ink:#f4eee5;--mute:#a99b8c;--acc:#b98a50;--gold:#e2b66d;--line:#39332c;--ok:#75b88b;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(ellipse at top,#282018 0%,var(--bg) 55%);color:var(--ink);font:15px/1.45 "Trebuchet MS",system-ui,sans-serif;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:620px;margin:0 auto;padding:14px 14px 48px}
+h1{font:700 23px Georgia,serif;margin:0;letter-spacing:.7px}
+h1 small{display:block;font:400 13px "Trebuchet MS",system-ui,sans-serif;color:var(--mute)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);background:rgba(16,15,14,.94);backdrop-filter:blur(12px);padding:11px 0;z-index:5;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--gold)}
+.money{font:700 27px Georgia,serif;color:var(--gold);text-shadow:0 0 18px #e2b66d33}
+h2{font:700 17px Georgia,serif;margin:20px 0 8px}
+.card{background:linear-gradient(145deg,#24201c,var(--card));border:1px solid var(--line);border-radius:13px;padding:12px 13px;margin-bottom:9px;box-shadow:0 5px 18px #0003}
+.row{display:flex;align-items:center;gap:10px;justify-content:space-between}
+button{font:inherit;font-weight:700;border:1px solid #d5ad76;border-radius:9px;padding:10px 14px;background:linear-gradient(135deg,#bd925a,#8d6035);color:#130f0b;min-height:44px;box-shadow:0 3px 10px #0004}
+button:disabled{opacity:.35}
+button.alt{background:#171513;color:var(--ink);border:1px solid var(--line);box-shadow:none}
+button.on{border-color:var(--acc);color:var(--acc)}
+.bar{height:8px;border-radius:5px;background:#40382f;overflow:hidden;margin-top:7px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,#9a6a35,var(--gold));width:0}
+.bar.pat i{background:var(--acc)}
+.mute{color:var(--mute);font-size:14px}
+.flv{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.flv button{flex:1 1 45%;font-size:14px;padding:8px}
+.stock{display:flex;gap:8px;flex-wrap:wrap}
+.stock span{background:#211d19;border:1px solid var(--line);border-radius:20px;padding:5px 10px;font-size:13px}
+.stars{color:var(--gold);font-size:18px}.stars small{color:var(--mute);font-size:13px}
+.flv button{flex:1 1 30%;font-size:13px}
+.toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:50%;transform:translate(-50%,-18px);width:min(92%,560px);z-index:20;background:linear-gradient(135deg,#33271b,#1b1713);border:1px solid var(--gold);border-radius:13px;padding:13px 15px;box-shadow:0 12px 35px #0009;opacity:0;pointer-events:none;transition:.25s ease}.toast.show{opacity:1;transform:translate(-50%,0)}.toast b{color:var(--gold)}.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.statbox{background:#171513;border:1px solid var(--line);border-radius:10px;padding:10px}.statbox strong{display:block;color:var(--gold);font:700 20px Georgia,serif}.factory{border-color:#80613c;background:linear-gradient(145deg,#30251a,#1c1a18)}
+[data-theme="light"]{--bg:#f4eee5;--card:#fffaf2;--ink:#261d14;--mute:#6f6253;--acc:#8d5a22;--gold:#9a6a1d;--line:#dccfbb;--ok:#2f7d4f;color-scheme:light}
+[data-theme="light"] body{background:radial-gradient(ellipse at top,#fffaf0 0%,var(--bg) 55%)}
+[data-theme="light"] .top{background:rgba(244,238,229,.94)}
+[data-theme="light"] .card{background:linear-gradient(145deg,#fffdf8,var(--card));box-shadow:0 4px 14px #5a3d1a1a}
+[data-theme="light"] button.alt{background:#fff}
+[data-theme="light"] .bar{background:#e4d8c4}
+[data-theme="light"] .stock span,[data-theme="light"] .statbox{background:#f7efe2}
+[data-theme="light"] .toast{background:linear-gradient(135deg,#fff6e6,#f3e6cf)}
+[data-theme="light"] .factory{background:linear-gradient(145deg,#f7ead6,#fffaf2);border-color:#c6a26e}
+[data-theme="light"] .money{text-shadow:none}
+.fl{position:fixed;z-index:30;font:700 18px Georgia,serif;color:var(--ok);pointer-events:none;animation:fl 1s ease-out forwards}@keyframes fl{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(-44px)}}
+.pop{animation:pop .3s}@keyframes pop{50%{transform:scale(1.18)}}
+button{transition:transform .08s}button:active:not(:disabled){transform:scale(.95)}.bar i{transition:width .25s linear}
+@media (prefers-reduced-motion:reduce){.fl,.pop{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="top"><h1>CRAFT JERKY S.V.<small id="sub">ПРЕМІАЛЬНИЙ БІЗНЕС-СИМУЛЯТОР</small></h1><div style="display:flex;align-items:center;gap:10px"><div class="money" id="money"></div><button class="alt" id="gear" aria-label="Settings" style="min-height:40px;padding:6px 10px">⚙️</button></div></div>
+ <div id="toast" class="toast" role="status" aria-live="polite"></div><div id="app"></div>
+ <p class="mute" style="margin-top:24px"><button class="alt" data-a="reset" style="min-height:36px;padding:6px 10px">Почати заново</button></p>
+</div>
+<script>
+// Смаки: c = ціна партії ($), p = ціна пакета ($), lv = рівень, на якому смак відкривається
+const F=[
+ {n:'Classic',e:'🍗',c:8,p:4,lv:1},
+ {n:'Paprika',e:'🫑',c:12,p:6,lv:2},
+ {n:'Special',e:'⭐',c:18,p:9,lv:4},
+ {n:'Sweet Curry',e:'🍛',c:26,p:13,lv:6},
+ {n:'BBQ',e:'🔥',c:36,p:18,lv:8},
+ {n:'Teriyaki',e:'🍯',c:50,p:25,lv:10},
+ {n:'Garlic Pepper',e:'🧄',c:66,p:33,lv:12},
+ {n:'Honey Mustard',e:'🐝',c:85,p:42,lv:14},
+ {n:'Hickory Smoke',e:'🪵',c:110,p:55,lv:16},
+ {n:'Lemon Herb',e:'🍋',c:140,p:70,lv:18},
+ {n:'Jalapeño',e:'🌿',c:180,p:90,lv:20},
+ {n:'Maple',e:'🍁',c:230,p:115,lv:22},
+ {n:'Sriracha',e:'🌶️',c:290,p:145,lv:24},
+ {n:'Habanero',e:'🥵',c:370,p:185,lv:26},
+ {n:'Truffle',e:'🍄',c:480,p:240,lv:28},
+ {n:'Gold Reserve',e:'👑',c:650,p:325,lv:30}
+];
+const ST=Object.assign({lang:'uk',theme:'dark',sound:1,vib:1,music:1},(()=>{try{return JSON.parse(localStorage.getItem('cjt2s'))||{}}catch(e){return {}}})());
+let showSet=false,AC;
+const EN=[['Рівень','Level'],['рівень','level'],['(макс)','(max)'],['Ви на вершині!','You are at the top!'],['Досвід: ','XP: '],['Кухня','Kitchen'],['Партія: ','Batch: '],['пакетів, закупівля ','packs, cost '],['Запустити','Start'],['Сушарка','Dryer'],['вільна','free'],['Склад','Stock'],['Клієнти приходять частіше','Customers arrive more often'],['Клієнти','Customers'],['Поки нікого. Скоро хтось прийде.','No one yet. Someone will arrive soon.'],['хоче','wants'],['не вистачає на складі','not enough in stock'],['Продати','Sell'],['Оптові замовлення','Wholesale orders'],['мало на складі','low stock'],['Відправити','Ship'],['Завдання дня','Daily tasks'],['Продай','Sell'],['Обслужи','Serve'],['клієнтів','customers'],['Заробіти','Earn'],['Фінанси компанії','Company finances'],['Усього доходів','Total income'],['Усього витрат','Total expenses'],['Чистий результат','Net result'],['Гроші зараз','Cash now'],['Статистика накопичується від початку збереження гри.','Stats accumulate from the start of this save.'],['Виробничі приміщення','Production facilities'],['Корпоративний масштаб','Corporate scale'],['Бонус до випуску продукції: ','Output bonus: '],['Побудовано: ','Built: '],['наступне: ','next: '],['Макс','Max'],['Побудувати','Build'],['Працівники','Staff'],['Сповіщення про події','Event notifications'],['Дозволь повідомлення браузера для важливих подій','Allow browser notifications for important events'],['Увімкнути','Enable'],['раз на ','every '],['Розвиток','Upgrades'],['Досягнення: ','Achievement: '],['Досягнення','Achievements'],['Продано пакетів: ','Packs sold: '],['Ще одна партія одночасно','One more batch at a time'],['Розмір партії','Batch size'],['Більше пакетів з однієї партії','More packs per batch'],['Швидкість сушіння','Drying speed'],['Партії готуються швидше','Batches finish faster'],['Стильна упаковка','Stylish packaging'],['+10% до ціни кожного пакета','+10% to each pack price'],['Реклама в Instagram','Instagram ads'],['кожні ','every '],['Цех №2','Workshop #2'],['Додатковий виробничий майданчик: +8% до випуску','Extra production site: +8% output'],['Велика фабрика','Large factory'],['Промислове виробництво: +18% до випуску','Industrial production: +18% output'],['Мегафабрика','Mega factory'],['Максимальний масштаб: +35% до випуску','Maximum scale: +35% output'],['🎉 Фестиваль! Клієнтів удвічі більше','🎉 Festival! Twice as many customers'],['⚡ Збій електрики: сушарки стоять','⚡ Power outage: dryers are stopped'],['📱 Вірусний відгук в Instagram!','📱 Viral Instagram review!'],['пакетів продано','packs sold'],['пакетів BBQ','BBQ packs'],['Рейтинг 5 зірок','5-star rating'],['Перший працівник','First employee'],['Кухар','Cook'],['Сам запускає партії обраного смаку','Starts batches of the selected flavor by itself'],['Продавець','Seller'],['Сам обслуговує клієнтів зі складу','Serves customers from stock by itself'],['Олена','Olena'],['Максим','Maksym'],['Іра','Ira'],['Андрій','Andriy'],['Софія','Sofia'],['Тарас','Taras'],['Оксана','Oksana'],['Дмитро','Dmytro'],['Магазин «Домашній»','Homestyle Market'],['Кав’ярня «Ранок»','Morning Café'],['Фітнес-клуб «Сила»','Power Fitness Club'],['Супермаркет «Тут»','Tut Supermarket'],['Сповіщення увімкнено','Notifications enabled'],['Тепер важливі події можуть з’являтися навіть поза грою','Important events can now appear even outside the game'],['Сповіщення','Notifications'],['Дозвіл браузера: ','Browser permission: '],['не підтримується','not supported'],['Новий етап: фабрики!','New stage: factories!'],['Новий рівень!','New level!'],['Ти досяг 30 рівня. Відкрито виробничі приміщення.','You reached level 30. Production facilities unlocked.'],['Нове приміщення відкрито!','New facility opened!'],[' тепер працює на твою компанію',' now works for your company'],['Подія завершилася','Event ended'],['Компанія повертається до звичайного режиму.','The company is back to normal.'],['Випадкова подія!','Random event!'],[' — виробництво тимчасово зупинено.',' — production temporarily stopped.'],[' — клієнтів стало вдвічі більше.',' — twice as many customers.'],[' — рейтинг компанії зріс.',' — company rating went up.'],['Завдання виконано! +$','Task complete! +$'],['Новий смак: ','New flavor: '],['Налаштування','Settings'],['Відгуки клієнтів','Customer reviews'],['Серія входів: ','Login streak: '],[' дн.',' days'],['Серія ','Streak '],['Щоденний бонус!','Daily bonus!'],['Вітаємо знову!','Welcome back!'],['Поки вас не було (','While you were away ('],[' год ',' h '],[' хв), працівники заробили $',' min), your staff earned $'],['Збереження прогресу','Save progress'],['Створити код','Create code'],['Завантажити з коду','Load from code'],['Код збереження з’явиться тут','Save code will appear here'],['Код збережено','Code saved'],['Скопійовано. Збережіть його в нотатках або месенджері.','Copied. Keep it in notes or a messenger.'],['Замінити поточний прогрес?','Replace current progress?'],['Прогрес завантажено','Progress loaded'],['Гру відновлено з коду.','Game restored from the code.'],['Помилка','Error'],['Невірний код збереження.','Invalid save code.'],['Смачно! Беру ще.','Delicious! Taking more.'],['Найкращі джерки в місті!','Best jerky in town!'],['Чудовий смак, дякую!','Great taste, thank you!'],['Дуже смачно, але трохи довго чекав.','Very tasty, but I waited a bit.'],['Хороші джерки, повернуся ще.','Good jerky, I will be back.'],['Непогано, але довго чекав.','Not bad, but I waited long.'],['Ледь дочекався, але смак порятував.','Barely waited, but the taste saved it.'],['Не дочекався і пішов 😠','Could not wait and left 😠'],['Занадто довга черга...','The line was too long...'],['Мова','Language'],['Тема','Theme'],['Темна','Dark'],['Світла','Light'],['Авто','Auto'],['Звук','Sound'],['Музика','Music'],['Вібрація','Vibration'],['Увімкнено','On'],['Вимкнено','Off'],['ПРЕМІАЛЬНИЙ БІЗНЕС-СИМУЛЯТОР','PREMIUM BUSINESS SIMULATOR'],['Почати гру заново?','Start the game over?'],['Почати заново','Start over']].sort((a,b)=>b[0].length-a[0].length);
+function tr(s){if(ST.lang!=='en')return s;s=s.replace(/(\d) с(?![а-яіїєґ])/g,'$1 s');for(const [u,e] of EN)s=s.split(u).join(e);return s}
+function beep(f,d){if(!ST.sound)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.frequency.value=f;g.gain.value=.05;o.connect(g);g.connect(AC.destination);o.start();o.stop(AC.currentTime+d)}catch(e){}}
+function buzz(p){if(ST.vib&&navigator.vibrate){try{navigator.vibrate(p)}catch(e){}}}
+function ctx(){AC=AC||new (window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();return AC}
+function tone(f,t,d,ty,v){const c=AC,o=c.createOscillator(),g=c.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.015);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+.05)}
+const SFX={sell:[[660,0,.08],[880,.08,.12]],lvl:[[523,0,.12],[659,.12,.12],[784,.24,.12],[1047,.36,.3]],cook:[[220,0,.1],[330,.1,.14]],ach:[[784,0,.1],[988,.1,.1],[1319,.2,.25]],evt:[[440,0,.15],[330,.18,.25]],tap:[[520,0,.04]]};
+function sfx(n){if(!ST.sound)return;try{const t=ctx().currentTime;SFX[n].forEach(([f,o,d])=>tone(f,t+o,d,n==='tap'?'sine':'triangle',n==='tap'?.03:.07))}catch(e){}}
+let mus=null,ms=0;
+const PR=[[0,4,7],[-3,0,4],[-7,-3,0],[-5,-1,2]];
+function music(){
+ if(!ST.music||document.hidden){if(mus){clearInterval(mus);mus=null}return}
+ if(mus)return;
+ try{ctx()}catch(e){return}
+ mus=setInterval(()=>{try{const t=ctx().currentTime+.05,ch=PR[Math.floor(ms/8)%4],f=s=>261.63*Math.pow(2,s/12);
+  tone(f(ch[[0,1,2,1,2,1,0,2][ms%8]]),t,.5,'triangle',.035);
+  if(ms%4===0)tone(f(ch[0]-12),t,1.1,'sine',.05);
+  ms++}catch(e){}},430);
+}
+let codeTxt='';
+const R={5:['Смачно! Беру ще.','Найкращі джерки в місті!','Чудовий смак, дякую!'],4:['Дуже смачно, але трохи довго чекав.','Хороші джерки, повернуся ще.'],3:['Непогано, але довго чекав.'],2:['Ледь дочекався, але смак порятував.'],1:['Не дочекався і пішов 😠','Занадто довга черга...']};
+function addRev(c,left){const r=left?0:c.pat/c.max,s=left?1:r>.6?5:r>.35?4:r>.15?3:2,a=R[s];S.rev.unshift({n:c.name,f:c.f,s,t:a[Math.floor(Math.random()*a.length)]});if(S.rev.length>4)S.rev.pop()}
+function popMoney(){const e=$('money');if(e){e.classList.remove('pop');void e.offsetWidth;e.classList.add('pop')}}
+function floatTxt(t){const m=$('money').getBoundingClientRect(),d=document.createElement('div');d.className='fl';d.textContent=t;d.style.left=(m.left+m.width/2-20)+'px';d.style.top=(m.bottom+2)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1000)}
+function login(){const d=new Date().toISOString().slice(0,10);if(S.lday===d)return;const y=new Date(Date.now()-864e5).toISOString().slice(0,10);S.streak=S.lday===y?S.streak+1:1;S.lday=d;const r=Math.round((20+10*S.lvl)*Math.min(S.streak,7));earn(r);notify('Щоденний бонус!','Серія '+S.streak+' дн. · +$'+r,true)}
+function offline(){
+ const now=Date.now(),el=Math.min((now-(S.ts||now))/1000,28800);S.ts=now;
+ if(el<60||!(S.W.cook||S.W.seller))return;
+ const n=20,c=el*.5/n,f=F[S.sel],m0=S.m;
+ for(let i=0;i<n;i++){
+  if(S.W.cook){let nb=Math.floor(c*Math.min(S.W.cook/12,S.L.dry/dryTime()));nb=Math.min(nb,Math.floor(S.m/f.c));if(nb>0){spend(nb*f.c);S.stock[S.sel]+=nb*Math.max(1,Math.floor(batchN()*factoryBonus()))}}
+  if(S.W.seller){let k=Math.floor(c*Math.min(S.W.seller/12,1/custInt())*2);k=Math.min(k,S.stock[S.sel]);if(k>0){S.stock[S.sel]-=k;earn(k*f.p*mult());S.sold+=k;S.cnt[S.sel]+=k;S.xp+=k*(1+S.sel)}}
+ }
+ lvlUp();chk();
+ const g=S.m-m0;
+ if(g>0)notify('Вітаємо знову!','Поки вас не було ('+Math.floor(el/3600)+' год '+Math.floor(el%3600/60)+' хв), працівники заробили $'+Math.floor(g),true);
+}
+function impSave(){try{const o=JSON.parse(decodeURIComponent(escape(atob($('code').value.trim()))));if(!o||typeof o.m!=='number')throw 0;if(confirm(tr('Замінити поточний прогрес?'))){S=Object.assign(fresh(),o);codeTxt='';notify('Прогрес завантажено','Гру відновлено з коду.')}}catch(e){notify('Помилка','Невірний код збереження.')}}
+function applyTheme(){let t=ST.theme;if(t==='auto'){try{t=matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'}catch(e){t='dark'}}document.documentElement.dataset.theme=t}
+function applyLang(){document.documentElement.lang=ST.lang;const s=$('sub');if(s)s.textContent=tr('ПРЕМІАЛЬНИЙ БІЗНЕС-СИМУЛЯТОР');const r=document.querySelector('[data-a="reset"]');if(r)r.textContent=tr('Почати заново')}
+function cfg(i){const [k,v]=i.split(':');ST[k]=(k==='lang'||k==='theme')?v:+v;try{localStorage.setItem('cjt2s',JSON.stringify(ST))}catch(e){}applyTheme();applyLang();if(k==='sound'||k==='vib'){sfx('sell');buzz(15)}music();}
+function settingsHtml(){
+ if(!showSet)return '';
+ const b=(k,v,l)=>`<button class="alt ${ST[k]===v?'on':''}" data-a="cfg" data-i="${k}:${v}">${l}</button>`;
+ return `<div class="card"><div class="row"><b>⚙️ Налаштування</b><button class="alt" data-a="gear">✕</button></div>
+ <div class="mute" style="margin-top:8px">Мова</div><div class="flv">${b('lang','uk','Українська')}${b('lang','en','English')}</div>
+ <div class="mute">Тема</div><div class="flv">${b('theme','dark','Темна')}${b('theme','light','Світла')}${b('theme','auto','Авто')}</div>
+ <div class="mute">Звук</div><div class="flv">${b('sound',1,'Увімкнено')}${b('sound',0,'Вимкнено')}</div>
+ <div class="mute">Музика</div><div class="flv">${b('music',1,'Увімкнено')}${b('music',0,'Вимкнено')}</div>
+ <div class="mute">Вібрація</div><div class="flv">${b('vib',1,'Увімкнено')}${b('vib',0,'Вимкнено')}</div>
+ <div class="mute">Збереження прогресу</div><div class="flv"><button class="alt" data-a="exp">Створити код</button><button class="alt" data-a="imp">Завантажити з коду</button></div><textarea id="code" rows="3" placeholder="Код збереження з’явиться тут" style="width:100%;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:9px;padding:8px;font:12px monospace">${codeTxt}</textarea></div>`;
+}
+const KEY='cjt2';
+const fresh=()=>({m:50,sold:0,xp:0,lvl:1,rate:3,L:{dry:1,batch:0,spd:0,pr:0,mk:0},stock:Array(16).fill(0),cnt:Array(16).fill(0),slots:[null],q:[],sel:0,nc:6,W:{cook:0,seller:0},wt:{cook:0,seller:0},wo:[],nw:70,evt:null,nev:60,ach:[],day:'',dt:[],stats:{income:0,expenses:0},factories:{workshop:0,factory:0,mega:0},lday:'',streak:0,ts:0,rev:[]});
+let S=fresh();
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(fresh(),JSON.parse(r))}catch(e){}
+S.stats=Object.assign({income:0,expenses:0},S.stats||{});S.factories=Object.assign({workshop:0,factory:0,mega:0},S.factories||{});
+const U={
+ dry:{n:'Сушарка',d:'Ще одна партія одночасно',c:l=>Math.round(150*Math.pow(2.2,l-1)),max:8,v:l=>l},
+ batch:{n:'Розмір партії',d:'Більше пакетів з однієї партії',c:l=>Math.round(80*Math.pow(1.75,l)),max:14,v:l=>4+l*2},
+ spd:{n:'Швидкість сушіння',d:'Партії готуються швидше',c:l=>Math.round(90*Math.pow(1.9,l)),max:10,v:l=>(dryTime()).toFixed(1)+' с'},
+ pr:{n:'Стильна упаковка',d:'+10% до ціни кожного пакета',c:l=>Math.round(130*Math.pow(2,l)),max:10,v:l=>'+'+l*10+'%'},
+ mk:{n:'Реклама в Instagram',d:'Клієнти приходять частіше',c:l=>Math.round(110*Math.pow(2,l)),max:10,v:l=>'кожні '+custInt().toFixed(1)+' с'}
+};
+const dryTime=()=>10*Math.pow(.86,S.L.spd);
+const custInt=()=>9*Math.pow(.85,S.L.mk)*(1.5-S.rate*.14)*(S.evt&&S.evt.k==='fest'?.5:S.evt&&S.evt.k==='vir'?.7:1);
+const batchN=()=>4+S.L.batch*2;
+const mult=()=>(1+S.L.pr*.1)*(.85+S.rate*.05);
+const $=id=>document.getElementById(id);
+const fmt=n=>'$'+Math.floor(n);
+function earn(n){if(n>0){S.m+=n;S.stats.income+=n;popMoney()}}
+function spend(n){if(n>0&&S.m>=n){S.m-=n;S.stats.expenses+=n;return true}return false}
+let toastTimer;
+function notify(title,message,important=false){const el=$('toast');if(el){el.innerHTML=`<b>${tr(title)}</b><div>${tr(message)}</div>`;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),5200)}if(important&&'Notification'in window&&Notification.permission==='granted'){try{new Notification(tr(title),{body:tr(message)})}catch(e){}}}
+function askNotifications(){if('Notification'in window&&Notification.permission==='default')Notification.requestPermission().then(v=>{if(v==='granted')notify('Сповіщення увімкнено','Тепер важливі події можуть з’являтися навіть поза грою')});else notify('Сповіщення','Дозвіл браузера: '+(('Notification'in window)?Notification.permission:'не підтримується'))}
+function factoryBonus(){return 1+S.factories.workshop*.08+S.factories.factory*.18+S.factories.mega*.35}
+const FACT={workshop:{n:'Цех №2',d:'Додатковий виробничий майданчик: +8% до випуску',c:25000},factory:{n:'Велика фабрика',d:'Промислове виробництво: +18% до випуску',c:150000},mega:{n:'Мегафабрика',d:'Максимальний масштаб: +35% до випуску',c:750000}};
+const xpNeed=l=>Math.round(12*Math.pow(l,1.5));
+const EV={fest:'🎉 Фестиваль! Клієнтів удвічі більше',blk:'⚡ Збій електрики: сушарки стоять',vir:'📱 Вірусний відгук в Instagram!'};
+const ACH=[
+ {n:'50 пакетів продано',ok:()=>S.sold>=50,r:60},
+ {n:'500 пакетів продано',ok:()=>S.sold>=500,r:600},
+ {n:'5000 пакетів продано',ok:()=>S.sold>=5000,r:6000},
+ {n:'Рівень 10',ok:()=>S.lvl>=10,r:400},
+ {n:'Рівень 20',ok:()=>S.lvl>=20,r:4000},
+ {n:'Рівень 30',ok:()=>S.lvl>=30,r:30000},
+ {n:'100 пакетів BBQ',ok:()=>S.cnt[4]>=100,r:500},
+ {n:'Рейтинг 5 зірок',ok:()=>S.rate>=4.95,r:300},
+ {n:'Перший працівник',ok:()=>S.W.cook+S.W.seller>0,r:150}
+];
+const WK={cook:{n:'Кухар',d:'Сам запускає партії обраного смаку',c:l=>Math.round(200*Math.pow(2.3,l))},seller:{n:'Продавець',d:'Сам обслуговує клієнтів зі складу',c:l=>Math.round(250*Math.pow(2.3,l))}};
+const WMAX=5;
+const wInt=l=>12/l;
+function flash(t){note=t;render();setTimeout(()=>{note='';render()},7000)}
+function chk(){ACH.forEach((a,i)=>{if(!S.ach.includes(i)&&a.ok()){S.ach.push(i);earn(a.r);sfx('ach');flash('Досягнення: '+a.n+' +$'+a.r)}})}
+function daily(){
+ const d=new Date().toISOString().slice(0,10);
+ if(S.day===d)return;
+ S.day=d;
+ const ok=F.map((f,i)=>i).filter(i=>S.lvl>=F[i].lv),f=ok[Math.floor(Math.random()*ok.length)],L=S.lvl;
+ S.dt=[
+  {k:'p',f:f,n:10+L*2,g:0,r:Math.round((10+L*2)*F[f].p*.8)},
+  {k:'c',n:8+L,g:0,r:25*L+40},
+  {k:'m',n:Math.round(80*Math.pow(L,1.4)),g:0,r:Math.round(40*Math.pow(L,1.4))+20}
+ ];
+}
+function prog(k,f,v){
+ S.dt.forEach(t=>{if(t.k===k&&(k!=='p'||t.f===f)&&t.g<t.n){t.g=Math.min(t.n,t.g+v);if(t.g>=t.n){earn(t.r);flash('Завдання виконано! +$'+t.r)}}});
+}
+let note='';
+function lvlUp(){
+ while(S.lvl<30&&S.xp>=xpNeed(S.lvl)){
+  S.xp-=xpNeed(S.lvl);S.lvl++;sfx('lvl');buzz([40,40,40]);
+  const nf=F.find(f=>f.lv===S.lvl);
+  note='Рівень '+S.lvl+'!'+(nf?' Новий смак: '+nf.n:'');notify(S.lvl===30?'Новий етап: фабрики!':'Новий рівень!',S.lvl===30?'Ти досяг 30 рівня. Відкрито виробничі приміщення.':note,true);
+  setTimeout(()=>{note='';render()},7000);
+ }
+}
+function save(){S.ts=Date.now();try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function addCust(){
+ if(S.q.length>=5)return;
+ const ok=F.map((f,i)=>i).filter(i=>S.lvl>=F[i].lv);const vip=S.lvl>=3&&Math.random()<.12;
+ const f=ok[Math.floor(Math.random()*ok.length)];
+ const qty=1+Math.floor(Math.random()*Math.min(4,2+Math.floor(S.L.batch/2)));
+ S.q.push({f,qty:vip?qty+3:qty,vip,pat:vip?70:45,max:vip?70:45,name:['Олена','Максим','Іра','Андрій','Софія','Тарас','Оксана','Дмитро'][Math.floor(Math.random()*8)]});
+}
+function act(a,i){
+ if(a==='sel'){S.sel=i}
+ else if(a==='gear'){showSet=!showSet}
+ else if(a==='cfg'){cfg(i)}
+ else if(a==='exp'){codeTxt=btoa(unescape(encodeURIComponent(JSON.stringify(S))));try{navigator.clipboard&&navigator.clipboard.writeText(codeTxt).catch(()=>{})}catch(e){}notify('Код збережено','Скопійовано. Збережіть його в нотатках або месенджері.')}
+ else if(a==='imp'){impSave()}
+ else if(a==='hire'){const w=WK[i],l=S.W[i];if(l<WMAX&&S.m>=w.c(l)){spend(w.c(l));S.W[i]=l+1;chk()}}
+ else if(a==='wh'){const o=S.wo[i];if(o&&S.stock[o.f]>=o.qty){S.stock[o.f]-=o.qty;earn(o.pay);floatTxt('+'+fmt(o.pay));S.sold+=o.qty;S.cnt[o.f]+=o.qty;S.xp+=o.qty*(1+o.f);S.rate=Math.min(5,S.rate+.15);S.wo.splice(i,1);prog('p',o.f,o.qty);prog('m',0,o.pay);lvlUp();chk()}}
+ else if(a==='cook'){
+  const f=F[S.sel],s=S.slots.findIndex(x=>!x);
+  if(s>-1&&S.m>=f.c){spend(f.c);sfx('cook');S.slots[s]={f:S.sel,t:0,tot:dryTime()}}
+ }
+ else if(a==='serve'){
+  const c=S.q[i];if(c&&S.stock[c.f]>=c.qty){
+   const g=c.qty*F[c.f].p*mult()*(1+c.pat/c.max*.2)*(c.vip?1.8:1);S.stock[c.f]-=c.qty;earn(g);floatTxt('+'+fmt(g));sfx('sell');buzz(15);S.sold+=c.qty;S.cnt[c.f]+=c.qty;S.xp+=c.qty*(1+c.f)*(c.vip?2:1);S.rate=Math.min(5,S.rate+(c.pat/c.max>.5?.06:.02));addRev(c);S.q.splice(i,1);prog('p',c.f,c.qty);prog('c',0,1);prog('m',0,g);lvlUp();chk()}
+ }
+ else if(a==='up'){
+  const u=U[i],l=S.L[i];
+  const lv=i==='dry'?l:l+1;
+  const cost=u.c(i==='dry'?l:l+1);
+  if(l<(i==='dry'?u.max:u.max)&&S.m>=cost){spend(cost);S.L[i]=l+1;if(i==='dry')S.slots.push(null)}
+ }
+ else if(a==='factory'){const b=FACT[i],l=S.factories[i]||0,cost=b.c*Math.pow(3,l);if(b&&S.lvl>=30&&l<3&&spend(cost)){S.factories[i]=l+1;notify('Нове приміщення відкрито!',b.n+' тепер працює на твою компанію',true)}}
+  else if(a==='notify'){askNotifications()}
+  else if(a==='reset'){if(confirm(tr('Почати гру заново?'))){S=fresh()}}
+ render();save();
+}
+function render(){
+ $('money').textContent=fmt(S.m);
+ const mx=S.lvl>=30,need=xpNeed(S.lvl),fl=Math.floor(S.rate);
+ let h=settingsHtml()+`<div class="card"><div class="row"><b>Рівень ${S.lvl}${mx?' (макс)':''}</b><span class="stars">${'★'.repeat(fl)}${'☆'.repeat(5-fl)} <small>${S.rate.toFixed(1)}</small></span></div><div class="bar"><i style="width:${mx?100:S.xp/need*100}%"></i></div><div class="mute">${mx?'Ви на вершині!':'Досвід: '+Math.floor(S.xp)+' / '+need}${note?' · '+note:''}</div>${S.evt?`<div class="mute"><b>${EV[S.evt.k]}</b></div>`:''}</div><h2>Кухня</h2><div class="flv">`;
+ let shown=false;
+ F.forEach((f,i)=>{
+  if(S.lvl>=f.lv)h+=`<button class="alt ${S.sel===i?'on':''}" data-a="sel" data-i="${i}">${f.e} ${f.n}</button>`;
+  else if(!shown){shown=true;h+=`<button class="alt" disabled>🔒 ${f.n}<br>рівень ${f.lv}</button>`}
+ });
+ const f=F[S.sel],free=S.slots.some(x=>!x);
+ h+=`</div><div class="card"><div class="row"><div><b>${f.e} ${f.n}</b><div class="mute">Партія: ${batchN()} пакетів, закупівля ${fmt(f.c)}</div></div>
+ <button data-a="cook" ${(!free||S.m<f.c)?'disabled':''}>Запустити</button></div></div>`;
+ S.slots.forEach((s,i)=>{
+  h+=`<div class="card"><div class="row"><span>Сушарка ${i+1}</span><span class="mute">${s?F[s.f].e+' '+F[s.f].n:'вільна'}</span></div>${s?`<div class="bar"><i data-p="${i}"></i></div>`:''}</div>`;
+ });
+ h+='<h2>Склад</h2><div class="stock">'+F.map((f,i)=>S.lvl>=f.lv?`<span>${f.e} ${S.stock[i]}</span>`:'').join('')+'</div>';
+ h+='<h2>Клієнти</h2>';
+ if(!S.q.length)h+='<div class="card mute">Поки нікого. Скоро хтось прийде.</div>';
+ S.q.forEach((c,i)=>{
+  const have=S.stock[c.f]>=c.qty;
+  h+=`<div class="card"><div class="row"><div><b>${c.vip?'⭐ VIP ':''}${c.name}</b> хоче ${F[c.f].e} ×${c.qty}<div class="mute">${fmt(c.qty*F[c.f].p*mult()*(c.vip?1.8:1))}${have?'':' · не вистачає на складі'}</div></div>
+  <button data-a="serve" data-i="${i}" ${have?'':'disabled'}>Продати</button></div><div class="bar pat"><i data-c="${i}"></i></div></div>`;
+ });
+ if(S.rev.length){h+='<h2>Відгуки клієнтів</h2>'+S.rev.map(r=>`<div class="card"><div class="row"><span><b>${r.n}</b> ${F[r.f].e}</span><span class="stars" style="font-size:14px">${'★'.repeat(r.s)}${'☆'.repeat(5-r.s)}</span></div><div class="mute">«${r.t}»</div></div>`).join('')}
+ if(S.wo.length){h+='<h2>Оптові замовлення</h2>';S.wo.forEach((o,i)=>{const okk=S.stock[o.f]>=o.qty;h+=`<div class="card"><div class="row"><div><b>🏪 ${o.name}</b>: ${F[o.f].e} ×${o.qty}<div class="mute">${fmt(o.pay)}${okk?'':' · мало на складі ('+S.stock[o.f]+')'}</div></div><button data-a="wh" data-i="${i}" ${okk?'':'disabled'}>Відправити</button></div><div class="bar pat"><i data-w="${i}"></i></div></div>`})}
+ h+='<h2>Завдання дня</h2><div class="mute">🔥 Серія входів: '+S.streak+' дн.</div>';
+ S.dt.forEach(t=>{const tx=t.k==='p'?'Продай '+t.n+' × '+F[t.f].e+' '+F[t.f].n:t.k==='c'?'Обслужи '+t.n+' клієнтів':'Заробіти '+fmt(t.n);const m=t.k==='m';h+=`<div class="card"><div class="row"><span>${t.g>=t.n?'✅ ':''}${tx}</span><span class="mute">${m?fmt(t.g):t.g}/${m?fmt(t.n):t.n} · +${fmt(t.r)}</span></div><div class="bar"><i style="width:${t.g/t.n*100}%"></i></div></div>`});
+ h+='<h2>Фінанси компанії</h2><div class="card"><div class="statgrid"><div class="statbox"><span class="mute">Усього доходів</span><strong>'+fmt(S.stats.income)+'</strong></div><div class="statbox"><span class="mute">Усього витрат</span><strong>'+fmt(S.stats.expenses)+'</strong></div><div class="statbox"><span class="mute">Чистий результат</span><strong style="color:'+(S.stats.income-S.stats.expenses>=0?'var(--ok)':'var(--acc)')+'">'+fmt(S.stats.income-S.stats.expenses)+'</strong></div><div class="statbox"><span class="mute">Гроші зараз</span><strong>'+fmt(S.m)+'</strong></div></div><p class="mute">Статистика накопичується від початку збереження гри.</p></div>';
+  if(S.lvl>=30){h+='<h2>🏭 Виробничі приміщення</h2><div class="card factory"><b>Корпоративний масштаб</b><div class="mute">Бонус до випуску продукції: +'+Math.round((factoryBonus()-1)*100)+'%</div></div>';for(const k in FACT){const b=FACT[k],l=S.factories[k]||0,cost=b.c*Math.pow(3,l);h+='<div class="card factory"><div class="row"><div><b>🏭 '+b.n+'</b><div class="mute">'+b.d+'</div><div class="mute">Побудовано: '+l+'/3 · наступне: '+fmt(cost)+'</div></div><button data-a="factory" data-i="'+k+'" '+(l>=3||S.m<cost?'disabled':'')+'>'+(l>=3?'Макс':'Побудувати')+'</button></div></div>'}}
+  h+='<h2>Працівники</h2>';
+  h+='<div class="card"><div class="row"><div><b>Сповіщення про події</b><div class="mute">Дозволь повідомлення браузера для важливих подій</div></div><button class="alt" data-a="notify">Увімкнути</button></div></div>';
+ for(const k in WK){const w=WK[k],l=S.W[k],wm=l>=WMAX;h+=`<div class="card"><div class="row"><div><b>${w.n}</b> <span class="mute">(рівень ${l}${l?', раз на '+wInt(l).toFixed(1)+' с':''})</span><div class="mute">${w.d}</div></div><button data-a="hire" data-i="${k}" ${(wm||S.m<w.c(l))?'disabled':''}>${wm?'Макс':fmt(w.c(l))}</button></div></div>`}
+ h+=`<h2>Розвиток</h2>`;
+ for(const k in U){
+  const u=U[k],l=S.L[k],maxed=l>=u.max,cost=u.c(k==='dry'?l:l+1);
+  h+=`<div class="card"><div class="row"><div><b>${u.n}</b> <span class="mute">(${u.v(l)})</span><div class="mute">${u.d}</div></div>
+  <button data-a="up" data-i="${k}" ${(maxed||S.m<cost)?'disabled':''}>${maxed?'Макс':fmt(cost)}</button></div></div>`;
+ }
+ h+=`<h2>Досягнення (${S.ach.length}/${ACH.length})</h2><div class="stock">`+ACH.map((a,i)=>`<span style="${S.ach.includes(i)?'':'opacity:.5'}">${S.ach.includes(i)?'🏆':'🔒'} ${a.n} · ${fmt(a.r)}</span>`).join('')+'</div>';
+ h+=`<p class="mute">Продано пакетів: ${S.sold}</p>`;
+ $('app').innerHTML=tr(h);
+ bars();
+}
+function bars(){
+ S.slots.forEach((s,i)=>{const el=document.querySelector('[data-p="'+i+'"]');if(el&&s)el.style.width=Math.min(100,s.t/s.tot*100)+'%'});
+ S.wo.forEach((o,i)=>{const el=document.querySelector('[data-w="'+i+'"]');if(el)el.style.width=Math.max(0,o.left/o.max*100)+'%'});
+ S.q.forEach((c,i)=>{const el=document.querySelector('[data-c="'+i+'"]');if(el)el.style.width=Math.max(0,c.pat/c.max*100)+'%'});
+}
+$('app').addEventListener('click',e=>{
+ const b=e.target.closest('button');if(!b)return;sfx('tap');
+ act(b.dataset.a,b.dataset.i!==undefined&&!isNaN(b.dataset.i)?+b.dataset.i:b.dataset.i);
+});
+document.querySelector('[data-a="reset"]').addEventListener('click',()=>act('reset'));
+let last=Date.now(),sv=0;
+setInterval(()=>{
+ const now=Date.now(),dt=Math.min(1,(now-last)/1000);last=now;let ev=false;
+ const blk=S.evt&&S.evt.k==='blk';S.slots.forEach((s,i)=>{if(s&&!blk){s.t+=dt;if(s.t>=s.tot){S.stock[s.f]+=Math.max(1,Math.floor(batchN()*factoryBonus()));S.slots[i]=null;ev=true}}});
+ for(let i=S.q.length-1;i>=0;i--){S.q[i].pat-=dt;if(S.q[i].pat<=0){addRev(S.q[i],1);S.q.splice(i,1);S.rate=Math.max(1,S.rate-.15);ev=true}}
+ S.nc-=dt;if(S.nc<=0){addCust();S.nc=custInt()*(.7+Math.random()*.6);ev=true}
+ daily();chk();
+ if(S.evt){S.evt.t-=dt;if(S.evt.t<=0){notify('Подія завершилася','Компанія повертається до звичайного режиму.');S.evt=null;ev=true}}
+ S.nev-=dt;if(S.nev<=0&&!S.evt){const k=['fest','blk','vir'][Math.floor(Math.random()*3)];S.evt={k,t:k==='blk'?15:30};S.nev=70+Math.random()*60;if(k==='vir')S.rate=Math.min(5,S.rate+.5);sfx('evt');notify('Випадкова подія!',EV[k]+(k==='blk'?' — виробництво тимчасово зупинено.':k==='fest'?' — клієнтів стало вдвічі більше.':' — рейтинг компанії зріс.'),true);ev=true}
+ S.nw-=dt;if(S.nw<=0){S.nw=80+Math.random()*40;if(S.wo.length<2){const ok=F.map((f,i)=>i).filter(i=>S.lvl>=F[i].lv),f=ok[Math.floor(Math.random()*ok.length)],q=10+Math.floor(S.lvl*1.5)+Math.floor(Math.random()*10);S.wo.push({f,qty:q,pay:Math.round(q*F[f].p*2),left:150,max:150,name:['Магазин «Домашній»','Кав’ярня «Ранок»','Фітнес-клуб «Сила»','Супермаркет «Тут»'][Math.floor(Math.random()*4)]});ev=true}}
+ for(let i=S.wo.length-1;i>=0;i--){S.wo[i].left-=dt;if(S.wo[i].left<=0){S.wo.splice(i,1);S.rate=Math.max(1,S.rate-.3);ev=true}}
+ for(const k in WK){const l=S.W[k];if(l){S.wt[k]+=dt;if(S.wt[k]>=wInt(l)){S.wt[k]=0;if(k==='cook')act('cook');else{const j=S.q.findIndex(c=>S.stock[c.f]>=c.qty);if(j>-1)act('serve',j)}}}}
+ if(ev&&!(showSet&&document.activeElement&&document.activeElement.id==='code'))render();else bars();
+ sv+=dt;if(sv>5){sv=0;save()}
+},250);
+$('gear').addEventListener('click',()=>act('gear'));document.addEventListener('pointerdown',music);document.addEventListener('visibilitychange',music);document.addEventListener('visibilitychange',()=>{if(document.hidden)save();else{offline();login();render()}});$('app').addEventListener('input',e=>{if(e.target.id==='code')codeTxt=e.target.value});applyTheme();applyLang();daily();offline();login();render();
+</script>
+</body>
+</html>
